@@ -1,0 +1,36 @@
+# docker-compose.yaml
+
+version: '3.4'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      - main
+    restart: on-failure
+
+  app:
+    build: ./flask-api
+    container_name: flask_app
+    depends_on:
+      - redis
+    ports:
+      - "4001:5001"
+    hostname: app
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+
+  celery_service:
+    build: ./celery
+    container_name: celery_app
+    depends_on:
+      - redis
+    hostname: celery_app
+    networks:
+      - main
+
+networks:
+  main:
